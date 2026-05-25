@@ -306,9 +306,13 @@ body:not(.edit-locked) .lock-notice{display:none!important}
               <option value="無憑證">❌ 無憑證</option>
             </select>
           </div>
-          <div style="display:flex;align-items:flex-end">
-            <button class="btn btn-w" onclick="addMissing()" style="width:100%;justify-content:center">＋ 登記</button>
+          <div>
+            <div style="font-size:12px;color:#6b6b67;margin-bottom:4px">筆數</div>
+            <input type="number" id="miss-count" min="1" value="1" style="height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:16px;font-weight:600;background:#fff;color:#1a1a18;width:100%;text-align:center"/>
           </div>
+        </div>
+        <div style="margin-top:8px">
+          <button class="btn btn-w" onclick="addMissing()" style="width:100%;justify-content:center;height:44px;font-size:14px">＋ 登記</button>
         </div>
         <div id="miss-err" class="err-msg"></div>
       </div>
@@ -550,11 +554,13 @@ function addMissing() {
   const sid = document.getElementById('miss-store').value;
   const date = document.getElementById('miss-date').value;
   const proof = document.getElementById('miss-proof').value;
+  const count = parseInt(document.getElementById('miss-count').value, 10);
   document.getElementById('miss-err').textContent = '';
   if (!sid) { document.getElementById('miss-err').textContent = '請選擇店家'; return; }
   if (!date) { document.getElementById('miss-err').textContent = '請選擇消費日期'; return; }
+  if (isNaN(count) || count < 1) { document.getElementById('miss-err').textContent = '筆數請輸入 1 以上的數字'; return; }
   const store = stores.find(s=>s.id===sid);
-  const rec = { sid, name: store.name, date, proof };
+  const rec = { sid, name: store.name, date, proof, count };
   if (db) {
     db.ref('missing').push(rec);
   } else {
@@ -564,6 +570,7 @@ function addMissing() {
   }
   document.getElementById('miss-store').value = '';
   document.getElementById('miss-date').value = '';
+  document.getElementById('miss-count').value = '1';
 }
 
 function removeMissing(mid) {
@@ -583,28 +590,38 @@ function renderMissList() {
   const filtered = all.filter(([,m])=>(m.date||'（未設定日期）')===selectedDate)
     .sort((a,b)=>a[1].name.localeCompare(b[1].name,'zh-TW'));
 
+  const totalAll = Object.values(missing).reduce((s,m)=>s+(m.count||1),0);
+  const totalDay = filtered.reduce((s,[,m])=>s+(m.count||1),0);
+
   el.innerHTML = `
     <div class="date-filter-row">
       <label>📅 查看日期</label>
       <select id="miss-date-filter" onchange="renderMissList()">
-        ${dates.map(d=>`<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${all.filter(([,m])=>(m.date||'（未設定日期）')===d).length} 筆）</option>`).join('')}
+        ${dates.map(d=>{
+          const dayTotal = all.filter(([,m])=>(m.date||'（未設定日期）')===d).reduce((s,[,m])=>s+(m.count||1),0);
+          return `<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${dayTotal} 筆）</option>`;
+        }).join('')}
       </select>
-      <span class="total-cnt">共 ${all.length} 筆</span>
+      <span class="total-cnt">共 ${totalAll} 筆</span>
     </div>
     ${filtered.length ? `
     <div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
       ${filtered.map(([mid,m])=>{
         const proofClass = m.proof==='收據' ? 'proof-receipt' : 'proof-none';
         const proofIcon = m.proof==='收據' ? '🧾' : '❌';
+        const cnt = m.count || 1;
         return `<div class="miss-list-item">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0">
             <span style="font-size:13px">${m.name}</span>
             <span class="proof-chip ${proofClass}">${proofIcon} ${m.proof||'—'}</span>
+            <span style="font-size:12px;font-weight:600;color:#1a1a18;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${cnt} 筆</span>
           </div>
           ${isEditUnlocked ? `<span style="cursor:pointer;font-size:18px;color:#9ca3af;padding:0 4px;flex-shrink:0" onclick="removeMissing('${mid}')" title="刪除">×</span>` : ''}
         </div>`;
       }).join('')}
-    </div>` : '<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無登記資料</p>'}`;
+    </div>
+    <p style="font-size:12px;color:#9ca3af;margin-top:6px">當日合計 ${totalDay} 筆</p>
+    ` : '<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無登記資料</p>'}`;
 }
 
 // ── 指標 ─────────────────────────────────────────
@@ -613,7 +630,7 @@ function getStoreCounts() {
   Object.keys(collected).forEach(k=>{const s=findStore(parseInt(k,10));if(s)c[s.id]++;});
   return c;
 }
-function getMissByStore(sid) { return Object.values(missing).filter(m=>m.sid===sid).length; }
+function getMissByStore(sid) { return Object.values(missing).filter(m=>m.sid===sid).reduce((s,m)=>s+(m.count||1),0); }
 function getStoreCollected(sid) {
   return Object.entries(collected)
     .filter(([k])=>{const s=findStore(parseInt(k,10));return s&&s.id===sid;})
@@ -630,7 +647,7 @@ function groupByDate(entries) {
 }
 function updateMetrics() {
   const total = Object.keys(collected).length;
-  const missTotal = Object.keys(missing).length;
+  const missTotal = Object.values(missing).reduce((s,m)=>s+(m.count||1),0);
   const counts = getStoreCounts();
   document.getElementById('m-grand').textContent = total + missTotal;
   document.getElementById('m-total').textContent = total;
@@ -692,7 +709,7 @@ function renderStatList() {
           <div>${missList.map(([mid,m])=>{
             const proofClass = m.proof==='收據'?'proof-receipt':'proof-none';
             const proofIcon = m.proof==='收據'?'🧾':'❌';
-            return `<span class="miss-chip">⚠️ ${formatDisp(m.date)} <span class="proof-chip ${proofClass}" style="margin-left:2px">${proofIcon} ${m.proof||'—'}</span>${isEditUnlocked?`<span class="rx" onclick="event.stopPropagation();removeMissing('${mid}')">×</span>`:''}</span>`;
+            return `<span class="miss-chip">⚠️ ${formatDisp(m.date)} <span class="proof-chip ${proofClass}" style="margin-left:2px">${proofIcon} ${m.proof||'—'}</span> <span style="font-weight:600">${m.count||1}筆</span>${isEditUnlocked?`<span class="rx" onclick="event.stopPropagation();removeMissing('${mid}')">×</span>`:''}</span>`;
           }).join('')}</div>
         </div>`:''}
       </div>
@@ -737,7 +754,7 @@ function renderDailyList() {
     storeSnMap.get(storeName).push(key);
   });
 
-  const totalAll = [...dateMap.values()].reduce((s, d) => s + d.sns.length + d.missing.length, 0);
+  const totalAll = [...dateMap.values()].reduce((s, d) => s + d.sns.length + d.missing.reduce((a,x)=>a+(x.m.count||1),0), 0);
 
   el.innerHTML = `
     <div class="date-filter-row">
@@ -745,7 +762,7 @@ function renderDailyList() {
       <select id="daily-date-filter" onchange="renderDailyList()">
         ${dates.map(d => {
           const dd = dateMap.get(d);
-          const cnt = dd.sns.length + dd.missing.length;
+          const cnt = dd.sns.length + dd.missing.reduce((a,x)=>a+(x.m.count||1),0);
           return `<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${cnt} 筆）</option>`;
         }).join('')}
       </select>
@@ -778,6 +795,7 @@ function renderDailyList() {
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0">
                 <span style="font-size:13px">${m.name}</span>
                 <span class="proof-chip ${proofClass}">${proofIcon} ${m.proof||'—'}</span>
+                <span style="font-size:12px;font-weight:600;color:#1a1a18;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span>
               </div>
               ${isEditUnlocked ? `<span style="cursor:pointer;font-size:18px;color:#9ca3af;padding:0 4px;flex-shrink:0" onclick="removeMissing('${mid}')" title="刪除">×</span>` : ''}
             </div>`;
