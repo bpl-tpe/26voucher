@@ -423,12 +423,14 @@ function initFirebase() {
     db.ref('collected').on('value', snap => {
       collected = snap.val() || {};
       renderStatList(); updateMetrics(); updateHint(); renderDailyList();
+      if (document.getElementById('tab-stores') && document.getElementById('tab-stores').style.display !== 'none') renderStorePanel();
     });
 
     // 即時同步：遺漏券
     db.ref('missing').on('value', snap => {
       missing = snap.val() || {};
       renderMissList(); renderStatList(); updateMetrics(); renderDailyList();
+      if (document.getElementById('tab-stores') && document.getElementById('tab-stores').style.display !== 'none') renderStorePanel();
     });
 
     // 即時同步：店家範圍
@@ -837,19 +839,57 @@ function renderStorePanel() {
   const si = stores.findIndex(s=>s.id===sid);
   const s = stores[si];
   const alloc = s.ranges.reduce((a,[f,t])=>a+(t-f+1),0);
+
+  // 建立該店家的每日兌換資料
+  const dayMap = new Map();
+  Object.entries(collected).forEach(([k,v])=>{
+    const store = findStore(parseInt(k,10));
+    if (!store || store.id !== sid) return;
+    const d = v.date || '（未設定日期）';
+    if (!dayMap.has(d)) dayMap.set(d, { sns:[], missCount:0 });
+    dayMap.get(d).sns.push(k);
+  });
+  Object.values(missing).forEach(m=>{
+    if (m.sid !== sid) return;
+    const d = m.date || '（未設定日期）';
+    if (!dayMap.has(d)) dayMap.set(d, { sns:[], missCount:0 });
+    dayMap.get(d).missCount += (m.count||1);
+  });
+  const sortedDays = [...dayMap.entries()].sort((a,b)=>b[0].localeCompare(a[0]));
+
   panel.style.display = 'block';
   panel.innerHTML = `<div class="store-panel">
     <div class="store-panel-name">${s.name}</div>
-    <div style="font-size:12px;color:#6b6b67;margin-bottom:6px">目前流水號範圍 <span style="color:#9ca3af">（共 ${alloc} 張）</span></div>
-    <div>${s.ranges.map(([f,t],ri)=>`<span class="rtag">${pad(f)}–${pad(t)} ${isEditUnlocked?`<span style="cursor:pointer;color:#9ca3af" onclick="removeRange('${sid}',${ri})">×</span>`:''}</span>`).join('')}</div>
-    ${isEditUnlocked ? `<div class="add-rrow">
+
+    <div style="font-size:12px;color:#6b6b67;margin-bottom:6px">流水號範圍 <span style="color:#9ca3af">（共 ${alloc} 張）</span></div>
+    <div style="margin-bottom:14px">${s.ranges.map(([f,t],ri)=>`<span class="rtag">${pad(f)}–${pad(t)} ${isEditUnlocked?`<span style="cursor:pointer;color:#9ca3af" onclick="removeRange('${sid}',${ri})">×</span>`:''}</span>`).join('')}</div>
+
+    ${isEditUnlocked ? `<div class="add-rrow" style="margin-bottom:14px">
       <span style="font-size:12px;color:#6b6b67">追加範圍：</span>
       <input type="text" id="rf-panel" placeholder="起始號"/>
       <span style="font-size:12px;color:#9ca3af">–</span>
       <input type="text" id="rt-panel" placeholder="結束號"/>
       <button onclick="addRange('${sid}')">＋ 新增</button>
     </div>
-    <div id="range-err" class="err-msg"></div>` : ''}
+    <div id="range-err" class="err-msg" style="margin-bottom:10px"></div>` : ''}
+
+    <div style="font-size:12px;color:#6b6b67;margin-bottom:8px;padding-top:${isEditUnlocked?'0':'4px'}">
+      各日兌換紀錄
+      <span style="color:#9ca3af">（流水號 ${Object.entries(collected).filter(([k])=>{const st=findStore(parseInt(k,10));return st&&st.id===sid;}).length} 筆）</span>
+    </div>
+    ${sortedDays.length ? sortedDays.map(([date, data])=>{
+      const snSorted = data.sns.sort();
+      return `<div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f4f0;border-bottom:${data.sns.length?'1px':'0'} solid #e5e3db">
+          <span style="font-size:12px;font-weight:600;color:#1a1a18">📅 ${formatDisp(date)||date}</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            ${data.sns.length ? `<span style="font-size:11px;background:#e5e3db;border-radius:4px;padding:1px 7px;color:#1a1a18">流水號 ${data.sns.length} 筆</span>` : ''}
+            ${data.missCount ? `<span style="font-size:11px;background:#fef3c7;border:1px solid #f59e0b;border-radius:4px;padding:1px 7px;color:#92400e">遺漏 ${data.missCount} 筆</span>` : ''}
+          </div>
+        </div>
+        ${data.sns.length ? `<div style="padding:8px 12px"><div class="sn-grid">${snSorted.map(k=>`<span class="sn-chip">${k}</span>`).join('')}</div></div>` : ''}
+      </div>`;
+    }).join('') : `<p style="font-size:13px;color:#9ca3af;font-style:italic">尚無兌換紀錄</p>`}
   </div>`;
 }
 
