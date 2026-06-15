@@ -3,14 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>消費證明券統計系統</title>
+<title>消費證明券統計系統｜封存</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 32'%3E%3Cpath d='M6,1 H46 Q51,1 51,6 L51,11 Q48.5,11 48.5,13 Q48.5,15 51,15 L51,26 Q51,31 46,31 H6 Q1,31 1,26 L1,15 Q3.5,15 3.5,13 Q3.5,11 1,11 L1,6 Q1,1 6,1 Z' fill='%23f0ede8' stroke='%23d1d0c8' stroke-width='0.8'/%3E%3Cline x1='19' y1='2' x2='19' y2='30' stroke='%23d1d0c8' stroke-width='0.7' stroke-dasharray='2,2'/%3E%3Crect x='3' y='6' width='13' height='7' rx='2' fill='%23e67a59'/%3E%3Crect x='3' y='16' width='13' height='2.5' rx='1' fill='%23d1d0c8'/%3E%3Crect x='3' y='21' width='9' height='2.5' rx='1' fill='%23d1d0c8'/%3E%3Crect x='3' y='26' width='11' height='2.5' rx='1' fill='%23d1d0c8'/%3E%3Ctext x='21.5' y='11' font-family='monospace' font-size='5.5' font-weight='700' fill='%23e67a59'%3E8888%3C/text%3E%3Crect x='21.5' y='15' width='27' height='2.5' rx='1' fill='%23d1d0c8'/%3E%3Crect x='21.5' y='15' width='18' height='2.5' rx='1' fill='%23e67a59' opacity='0.85'/%3E%3Crect x='21.5' y='20' width='27' height='2.5' rx='1' fill='%23d1d0c8'/%3E%3Crect x='21.5' y='20' width='10' height='2.5' rx='1' fill='%23e67a59' opacity='0.6'/%3E%3Crect x='21.5' y='25' width='27' height='2.5' rx='1' fill='%23d1d0c8'/%3E%3Crect x='21.5' y='25' width='23' height='2.5' rx='1' fill='%23e67a59' opacity='0.75'/%3E%3C/svg%3E"/>
 
-<!-- ════════════════════════════════════════════════
-  ★  Firebase 設定區  ★
-  請依照「設定說明.txt」的步驟，把你的 Firebase 設定
-  貼到下方對應欄位，取代 PASTE_YOUR_... 的文字。
-════════════════════════════════════════════════ -->
 <script>
 const FIREBASE_CONFIG = {
   apiKey:            "AIzaSyDsI5q3Qsqe6RQr-i7cFdPwUJxlBzSxDfA",
@@ -22,7 +17,6 @@ const FIREBASE_CONFIG = {
   appId:             "1:617674222515:web:512b93941d8de811cb39c6"
 };
 </script>
-<!-- ════════════════════════════════════════════════ -->
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -31,24 +25,16 @@ const FIREBASE_CONFIG = {
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh}
 .topbar{background:#fff;border-bottom:1px solid #e5e3db;padding:0 12px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:8px}
-.topbar-title{font-size:14px;font-weight:600}
 .topbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .sync-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:#6b6b67;padding:3px 8px;border-radius:99px;border:1px solid #e5e3db;background:#fafaf8;white-space:nowrap}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:#9ca3af;flex-shrink:0}
 .sync-dot.ok{background:#22c55e}
-.sync-dot.err{background:#ef4444}
 .sync-dot.pulse{animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-@media(max-width:480px){
-  .sync-text{display:none}
-  .sync-badge{padding:3px 6px}
-  .lock-btn span#lock-label{display:none}
-}
+.archive-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:99px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;white-space:nowrap}
+@media(max-width:480px){.sync-text{display:none}.sync-badge{padding:3px 6px}}
 .container{max-width:780px;margin:0 auto;padding:16px}
-h1{font-size:18px;font-weight:600;margin-bottom:4px}
-.sub{font-size:12px;color:#6b6b67;margin-bottom:16px}
-/* 指標卡 */
-.grid-grand{margin-bottom:10px}
+.grid-grand{margin-bottom:8px}
 .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
 @media(max-width:480px){.grid-4{grid-template-columns:repeat(2,1fr)}}
 .metric{background:#fff;border-radius:10px;border:1px solid #e5e3db;padding:12px}
@@ -58,47 +44,10 @@ h1{font-size:18px;font-weight:600;margin-bottom:4px}
 .metric-total{background:#f0ede8;border-radius:10px;border:1px solid #d1d0c8;padding:12px}
 .metric-total .metric-label{color:#6b6b67;font-size:10px;margin-bottom:3px}
 .metric-total .metric-val{color:#1a1a18}
-/* 卡片 */
 .card{background:#fff;border:1px solid #e5e3db;border-radius:12px;padding:16px;margin-bottom:14px}
-/* 頁籤 */
-.tab-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px}
+.tab-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
 .tab{padding:8px 4px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #d1d0c8;background:transparent;color:#6b6b67;text-align:center;line-height:1.3}
 .tab.active{background:#1a1a18;color:#fff;border-color:transparent}
-.tab.warn-tab{border-color:#d97706;color:#b45309}
-.tab.warn-tab.active{background:#d97706;color:#fff;border-color:transparent}
-/* 日期列 */
-.date-bar{display:flex;align-items:center;gap:8px;background:#f5f4f0;border-radius:8px;padding:8px 10px;margin-bottom:12px;flex-wrap:wrap}
-.date-bar label{font-size:12px;color:#6b6b67;white-space:nowrap}
-.date-bar input[type=date]{height:34px;padding:0 8px;border:1px solid #d1d0c8;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;flex:1;min-width:140px}
-.date-hint{font-size:11px;color:#9ca3af;width:100%}
-/* 輸入列 */
-.irow{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.irow input{flex:1;min-width:0;height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:15px;background:#fff;color:#1a1a18}
-.irow input:focus{outline:none;border-color:#1a1a18}
-/* 按鈕 */
-.btn{height:42px;padding:0 14px;border-radius:8px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-weight:500}
-.btn-p{background:#1a1a18;color:#fff;border:none}
-.btn-o{background:#fff;border:1px solid #d1d0c8;color:#1a1a18}
-.btn-w{background:#d97706;color:#fff;border:none}
-.err-msg{font-size:12px;color:#dc2626;min-height:16px;margin-top:4px}
-.hint{font-size:12px;color:#9ca3af;margin-top:4px}
-/* 編輯鎖 */
-.lock-btn{display:flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border-radius:99px;cursor:pointer;font-weight:500;border:1px solid #d1d0c8;background:#fff;color:#6b6b67;white-space:nowrap}
-.lock-btn.unlocked{border-color:#22c55e;color:#16a34a;background:#f0fdf4}
-.lock-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:16px}
-.lock-overlay.show{display:flex}
-.lock-modal{background:#fff;border-radius:14px;padding:28px 20px;width:100%;max-width:300px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18)}
-.lock-modal h2{font-size:16px;font-weight:600;margin-bottom:6px}
-.lock-modal p{font-size:13px;color:#6b6b67;margin-bottom:16px}
-.lock-modal input{width:100%;height:46px;text-align:center;font-size:22px;letter-spacing:8px;border:1px solid #d1d0c8;border-radius:8px;margin-bottom:8px;background:#f5f4f0}
-.lock-modal input:focus{outline:none;border-color:#1a1a18}
-.lock-modal .err{font-size:12px;color:#dc2626;min-height:16px;margin-bottom:8px}
-.lock-modal .btns{display:flex;gap:8px}
-.lock-modal .btns button{flex:1;height:42px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer}
-/* 編輯區塊鎖定控制 */
-body.edit-locked .edit-action{display:none!important}
-body:not(.edit-locked) .lock-notice{display:none!important}
-.lock-notice{display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;background:#f5f4f0;border-radius:8px;padding:8px 12px;margin-bottom:12px}
 /* 統計列表 */
 .stat-hdr{display:grid;grid-template-columns:20px 1fr 40px 40px 40px 36px 80px;gap:6px;padding:4px 6px 8px;border-bottom:1px solid #e5e3db;margin-bottom:2px}
 .stat-hdr span{font-size:10px;color:#9ca3af}
@@ -110,22 +59,16 @@ body:not(.edit-locked) .lock-notice{display:none!important}
   .stat-hdr,.stat-main{grid-template-columns:16px 1fr 32px 32px 32px 28px 60px;gap:4px;padding:10px 4px}
   .stat-hdr span{font-size:9px}
 }
-.sname{font-size:12px;line-height:1.4;overflow:hidden}
-.sname-full{display:inline}
-.sname-short{display:none}
-@media(max-width:480px){
-  .sname-full{display:none}
-  .sname-short{display:inline}
-}
 .chevron{font-size:11px;color:#9ca3af;transition:transform .2s;display:flex;align-items:center}
 .chevron.open{transform:rotate(90deg)}
-.sname{font-size:12px;word-break:break-all;line-height:1.4}
+.sname{font-size:12px;line-height:1.4}
+.sname-full{display:inline}
+.sname-short{display:none}
+@media(max-width:480px){.sname-full{display:none}.sname-short{display:inline}}
 .scnt{font-size:13px;font-weight:600;text-align:right}
 .smiss{font-size:12px;font-weight:600;color:#b45309;text-align:right}
 .spct{font-size:11px;color:#6b6b67;text-align:right}
 .salloc{font-size:11px;color:#9ca3af;text-align:right}
-.bar-bg{height:4px;background:#e5e3db;border-radius:99px;overflow:hidden}
-.bar-fill{height:100%;border-radius:99px;background:#1a1a18;transition:width .3s}
 /* 第二層 */
 .stat-detail{display:none;background:#f5f4f0;border-radius:8px;margin:0 4px 8px 22px;padding:10px}
 .stat-detail.open{display:block}
@@ -138,49 +81,29 @@ body:not(.edit-locked) .lock-notice{display:none!important}
 .date-group-label .cnt{color:#9ca3af;font-weight:400}
 .sn-grid{display:flex;flex-wrap:wrap;gap:4px}
 .sn-chip{display:inline-flex;align-items:center;background:#fff;border:1px solid #e5e3db;border-radius:4px;padding:3px 7px;font-family:monospace;font-size:12px;color:#6b6b67}
-.sn-chip .rx{cursor:pointer;color:#9ca3af;font-size:13px;margin-left:4px;line-height:1}
-.sn-chip .rx:hover{color:#dc2626}
 .range-chip{display:inline-block;background:#fff;border:1px solid #e5e3db;border-radius:4px;padding:2px 7px;font-family:monospace;font-size:11px;color:#9ca3af;margin:1px 2px}
-.miss-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #f59e0b;border-radius:4px;padding:4px 8px;font-size:11px;color:#92400e;margin:2px}
-.miss-chip .rx{cursor:pointer;color:#d97706;font-size:12px;margin-left:2px}
-.miss-chip .rx:hover{color:#b45309}
+.miss-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #f59e0b;border-radius:4px;padding:3px 8px;font-size:11px;color:#92400e;margin:2px}
+.proof-chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500}
+.proof-receipt{background:#dcfce7;color:#166534}
+.proof-none{background:#fee2e2;color:#991b1b}
 .empty-txt{font-size:12px;color:#9ca3af;font-style:italic}
-/* 遺漏登記表單 - 手機堆疊 */
-.miss-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-@media(max-width:480px){.miss-form-grid{grid-template-columns:1fr}}
-.miss-form-grid select,.miss-form-grid input[type=date]{height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a18;width:100%}
-.miss-list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #e5e3db;font-size:13px;gap:8px}
-.miss-list-item:last-child{border-bottom:none}
-/* 日期下拉列 */
+/* 日期篩選 */
 .date-filter-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .date-filter-row label{font-size:12px;color:#6b6b67;white-space:nowrap}
 .date-filter-row select{flex:1;min-width:0;height:40px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18}
 .date-filter-row .total-cnt{font-size:12px;color:#9ca3af;white-space:nowrap}
-/* 遺漏券憑證 badge */
-.proof-chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500}
-.proof-receipt{background:#dcfce7;color:#166534}
-.proof-none{background:#fee2e2;color:#991b1b}
-/* 店家管理 */
-.store-select-row{display:flex;gap:8px;margin-bottom:14px}
-.store-select-row select{flex:1;height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a18;min-width:0}
-.store-panel{background:#f5f4f0;border-radius:10px;padding:14px}
-.store-panel-name{font-size:14px;font-weight:600;margin-bottom:10px}
-.rtag{display:inline-block;background:#fff;border:1px solid #e5e3db;border-radius:4px;padding:2px 8px;font-family:monospace;font-size:12px;color:#6b6b67;margin:2px}
-.add-rrow{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap}
-.add-rrow input{width:80px;height:36px;padding:0 8px;font-size:13px;border:1px solid #d1d0c8;border-radius:8px;background:#fff;color:#1a1a18;font-family:monospace}
-.add-rrow button{height:36px;padding:0 12px;font-size:13px;border-radius:8px;cursor:pointer;border:1px solid #d1d0c8;background:#fff;color:#1a1a18;font-weight:500}
-/* 離線提示 */
-.offline-banner{display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;font-size:13px;color:#92400e;margin-bottom:14px}
-.offline-banner.show{display:block}
-/* 刪除按鈕 */
-.btn-del{height:36px;padding:0 10px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #fca5a5;background:#fee2e2;color:#dc2626;font-weight:500;white-space:nowrap}
+/* 遺漏 */
+.miss-list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #e5e3db;font-size:13px;gap:8px}
+.miss-list-item:last-child{border-bottom:none}
+/* 匯出按鈕 */
+.btn-o{height:30px;padding:0 12px;border-radius:8px;font-size:12px;cursor:pointer;background:#fff;border:1px solid #d1d0c8;color:#1a1a18}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div style="display:flex;align-items:center;gap:10px">
-    <svg width="52" height="32" viewBox="0 0 52 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+    <svg width="52" height="32" viewBox="0 0 52 32" fill="none" style="flex-shrink:0">
       <path d="M6,1 H46 Q51,1 51,6 L51,11 Q48.5,11 48.5,13 Q48.5,15 51,15 L51,26 Q51,31 46,31 H6 Q1,31 1,26 L1,15 Q3.5,15 3.5,13 Q3.5,11 1,11 L1,6 Q1,1 6,1 Z" fill="#f0ede8" stroke="#d1d0c8" stroke-width="0.8"/>
       <line x1="19" y1="2" x2="19" y2="30" stroke="#d1d0c8" stroke-width="0.7" stroke-dasharray="2,2"/>
       <rect x="3" y="6" width="13" height="7" rx="2" fill="#e67a59"/>
@@ -189,19 +112,19 @@ body:not(.edit-locked) .lock-notice{display:none!important}
       <rect x="3" y="26" width="11" height="2.5" rx="1" fill="#d1d0c8"/>
       <text x="21.5" y="11" font-family="monospace" font-size="5.5" font-weight="700" fill="#e67a59">8888</text>
       <rect x="21.5" y="15" width="27" height="2.5" rx="1" fill="#d1d0c8"/>
-      <rect x="21.5" y="15" width="18"  height="2.5" rx="1" fill="#e67a59" opacity="0.85"/>
+      <rect x="21.5" y="15" width="18" height="2.5" rx="1" fill="#e67a59" opacity="0.85"/>
       <rect x="21.5" y="20" width="27" height="2.5" rx="1" fill="#d1d0c8"/>
-      <rect x="21.5" y="20" width="10"  height="2.5" rx="1" fill="#e67a59" opacity="0.6"/>
+      <rect x="21.5" y="20" width="10" height="2.5" rx="1" fill="#e67a59" opacity="0.6"/>
       <rect x="21.5" y="25" width="27" height="2.5" rx="1" fill="#d1d0c8"/>
-      <rect x="21.5" y="25" width="23"  height="2.5" rx="1" fill="#e67a59" opacity="0.75"/>
+      <rect x="21.5" y="25" width="23" height="2.5" rx="1" fill="#e67a59" opacity="0.75"/>
     </svg>
     <div style="line-height:1.25">
       <div style="font-size:13px;font-weight:600;color:#1a1a18">消費證明券統計系統</div>
       <div style="font-size:10px;color:#6b6b67;letter-spacing:.05em">COUPON TRACKING SYSTEM</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px">
-    <button class="lock-btn" id="lock-btn" onclick="lockBtnClick()">🔒 <span id="lock-label">僅限檢視</span></button>
+  <div class="topbar-right">
+    <span class="archive-badge">📦 封存模式</span>
     <span class="sync-badge">
       <span class="sync-dot pulse" id="sync-dot"></span>
       <span class="sync-text" id="sync-label">連線中…</span>
@@ -209,25 +132,8 @@ body:not(.edit-locked) .lock-notice{display:none!important}
   </div>
 </div>
 
-<!-- 密碼輸入框 -->
-<div class="lock-overlay" id="lock-overlay">
-  <div class="lock-modal">
-    <h2>🔐 輸入編輯密碼</h2>
-    <p>請輸入密碼以開啟編輯功能</p>
-    <input type="password" id="pwd-input" maxlength="20" placeholder="••••"
-      onkeydown="if(event.key==='Enter')submitPwd()"/>
-    <div class="err" id="pwd-err"></div>
-    <div class="btns">
-      <button onclick="closeLockModal()" style="border:1px solid #d1d0c8;background:#fff;color:#6b6b67">取消</button>
-      <button onclick="submitPwd()" style="background:#1a1a18;color:#fff;border:none">確認</button>
-    </div>
-  </div>
-</div>
-
 <div class="container">
-  <div class="offline-banner" id="offline-banner">⚠️ 目前離線，資料將在恢復連線後自動同步。</div>
 
-  <!-- 總計列 -->
   <div class="grid-grand" style="margin-bottom:8px">
     <div class="metric metric-total">
       <div class="metric-label">總回收數（流水號 ＋ 遺漏券）</div>
@@ -241,97 +147,28 @@ body:not(.edit-locked) .lock-notice{display:none!important}
     <div class="metric"><div class="metric-label">遺漏券登記</div><div class="metric-val warn" id="m-miss">0</div></div>
   </div>
 
-  <div class="card" id="main-card">
+  <!-- 頁籤：只保留查看功能 -->
+  <div class="card">
     <div class="tab-row">
-      <button class="tab active" onclick="switchTab('input')">✏️ 流水號</button>
-      <button class="tab warn-tab" onclick="switchTab('missing')">⚠️ 遺漏券</button>
-      <button class="tab" onclick="switchTab('daily')">📆 單日紀錄</button>
+      <button class="tab active" onclick="switchTab('daily')">📆 單日紀錄</button>
+      <button class="tab" onclick="switchTab('missing')">⚠️ 遺漏券</button>
       <button class="tab" onclick="switchTab('stores')">🏪 店家管理</button>
     </div>
 
-    <!-- 輸入流水號 -->
-    <div id="tab-input">
-      <div class="lock-notice">🔒 解鎖後才能輸入流水號</div>
-      <div class="edit-action">
-        <div class="date-bar">
-          <label>📅 回收日期</label>
-          <input type="date" id="collect-date" oninput="updateDateHint()"/>
-          <span class="date-hint" id="date-hint"></span>
-        </div>
-        <div class="irow">
-          <input type="text" id="sn-input" placeholder="輸入流水號，例如 0481 或 1234" onkeydown="if(event.key==='Enter'){addSN();this.focus()}"/>
-          <button class="btn btn-p" onclick="addSN()">＋ 新增</button>
-          <button class="btn btn-o" onclick="showBatch()">≡ 批次輸入</button>
-        </div>
-        <div id="err" class="err-msg"></div>
-        <p id="tags-hint" class="hint"></p>
-      </div>
+    <!-- 單日紀錄 -->
+    <div id="tab-daily">
+      <div id="daily-list"><div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">載入中…</div></div>
     </div>
 
-    <!-- 批次輸入 -->
-    <div id="tab-batch" style="display:none">
-      <div class="edit-action">
-        <div class="date-bar">
-          <label>📅 套用回收日期</label>
-          <input type="date" id="batch-date" oninput="updateBatchDateHint()"/>
-          <span class="date-hint" id="batch-date-hint"></span>
-        </div>
-        <p style="font-size:13px;color:#6b6b67;margin-bottom:8px">每行一個流水號，或以逗號 / 空格分隔</p>
-        <textarea id="batch-txt" style="width:100%;height:110px;font-size:13px;padding:10px;border:1px solid #d1d0c8;border-radius:8px;background:#fff;color:#1a1a18;resize:vertical;font-family:monospace" placeholder="0481&#10;0482&#10;0571, 0572"></textarea>
-        <div class="irow" style="margin-top:10px">
-          <button class="btn btn-p" onclick="processBatch()">確認匯入</button>
-          <button class="btn btn-o" onclick="switchTab('input')">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 遺漏券登記 -->
+    <!-- 遺漏券查看 -->
     <div id="tab-missing" style="display:none">
-      <div class="lock-notice">🔒 解鎖後才能新增或刪除遺漏券</div>
-      <div class="edit-action">
-        <p style="font-size:13px;color:#6b6b67;margin-bottom:12px">民眾表明已消費但無流水號時，選擇店家與消費日期登記。</p>
-        <div class="miss-form-grid">
-          <div>
-            <div style="font-size:12px;color:#6b6b67;margin-bottom:4px">店家</div>
-            <select id="miss-store" style="height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a18;width:100%"><option value="">— 選擇店家 —</option></select>
-          </div>
-          <div>
-            <div style="font-size:12px;color:#6b6b67;margin-bottom:4px">消費日期</div>
-            <input type="date" id="miss-date" style="height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a18;width:100%"/>
-          </div>
-          <div>
-            <div style="font-size:12px;color:#6b6b67;margin-bottom:4px">憑證類型</div>
-            <select id="miss-proof" style="height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a18;width:100%">
-              <option value="收據">🧾 收據</option>
-              <option value="無憑證">❌ 無憑證</option>
-            </select>
-          </div>
-          <div>
-            <div style="font-size:12px;color:#6b6b67;margin-bottom:4px">筆數</div>
-            <input type="number" id="miss-count" min="1" value="1" style="height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:16px;font-weight:600;background:#fff;color:#1a1a18;width:100%;text-align:center"/>
-          </div>
-        </div>
-        <div style="margin-top:8px">
-          <button class="btn btn-w" onclick="addMissing()" style="width:100%;justify-content:center;height:44px;font-size:14px">＋ 登記</button>
-        </div>
-        <div id="miss-err" class="err-msg"></div>
-      </div>
-      <div id="miss-list" style="margin-top:12px"></div>
+      <div id="miss-list"><div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">載入中…</div></div>
     </div>
 
-    <!-- 每日登記 -->
-    <div id="tab-daily" style="display:none">
-      <div id="daily-list"><div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">尚無資料</div></div>
-    </div>
-
-    <!-- 店家管理 -->
+    <!-- 店家管理（唯讀） -->
     <div id="tab-stores" style="display:none">
-      <div class="lock-notice">🔒 解鎖後才能修改流水號範圍</div>
-      <div class="edit-action">
-        <p style="font-size:12px;color:#6b6b67;margin-bottom:14px">選擇店家後可新增追加的消費證明券流水號範圍。</p>
-      </div>
-      <div class="store-select-row">
-        <select id="mgmt-store-select" onchange="renderStorePanel()">
+      <div class="store-select-row" style="display:flex;gap:8px;margin-bottom:14px">
+        <select id="mgmt-store-select" onchange="renderStorePanel()" style="flex:1;height:42px;padding:0 10px;border:1px solid #d1d0c8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a18;min-width:0">
           <option value="">— 選擇店家 —</option>
         </select>
       </div>
@@ -339,10 +176,11 @@ body:not(.edit-locked) .lock-notice{display:none!important}
     </div>
   </div>
 
+  <!-- 各店家統計 -->
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <span style="font-size:15px;font-weight:600">各店家統計</span>
-      <button class="btn btn-o" style="height:30px;font-size:12px" onclick="exportCSV()">↓ 匯出 CSV</button>
+      <button class="btn-o" onclick="exportCSV()">↓ 匯出 CSV</button>
     </div>
     <div class="stat-hdr">
       <span></span><span>店家名稱</span>
@@ -352,13 +190,13 @@ body:not(.edit-locked) .lock-notice{display:none!important}
       <span style="text-align:right;color:#9ca3af">佔比</span>
       <span></span>
     </div>
-    <div id="stat-list"><div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">尚無回收資料</div></div>
+    <div id="stat-list"><div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">載入中…</div></div>
   </div>
+
 </div>
 
 <script>
-// ── 店家資料 ──────────────────────────────────────
-const STORES_INIT = [
+const STORES_INIT=[
   {id:'s01',name:'淡然曙光 自烘咖啡館',ranges:[[481,570]]},
   {id:'s02',name:'甘心咖啡 GanXinCoffee',ranges:[[571,660]]},
   {id:'s03',name:'新選商號',ranges:[[991,1050]]},
@@ -394,308 +232,65 @@ const STORES_INIT = [
   {id:'s33',name:'豐生蔘藥行',ranges:[[2041,2070]]},
 ];
 
-// ── 狀態 ─────────────────────────────────────────
-let stores = JSON.parse(JSON.stringify(STORES_INIT));
-let collected = {};   // { "0481": { date:"2026-05-18" }, ... }
-let missing = {};     // { "m1": { sid, name, date }, ... }
-let openStores = new Set();
-let db = null;
-let isConnected = false;
+let stores=JSON.parse(JSON.stringify(STORES_INIT));
+let collected={};
+let missing={};
+let openStores=new Set();
 
-// ── Firebase 初始化 ───────────────────────────────
-function initFirebase() {
-  try {
-    if (FIREBASE_CONFIG.apiKey === 'PASTE_YOUR_API_KEY') {
-      setSyncStatus('no-config');
-      return;
-    }
-    firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.database();
-
-    // 連線狀態
-    db.ref('.info/connected').on('value', snap => {
-      isConnected = !!snap.val();
-      setSyncStatus(isConnected ? 'ok' : 'offline');
-      document.getElementById('offline-banner').classList.toggle('show', !isConnected);
-    });
-
-    // 即時同步：已回收流水號
-    db.ref('collected').on('value', snap => {
-      collected = snap.val() || {};
-      renderStatList(); updateMetrics(); updateHint(); renderDailyList();
-      if (document.getElementById('tab-stores') && document.getElementById('tab-stores').style.display !== 'none') renderStorePanel();
-    });
-
-    // 即時同步：遺漏券
-    db.ref('missing').on('value', snap => {
-      missing = snap.val() || {};
-      renderMissList(); renderStatList(); updateMetrics(); renderDailyList();
-      if (document.getElementById('tab-stores') && document.getElementById('tab-stores').style.display !== 'none') renderStorePanel();
-    });
-
-    // 即時同步：店家範圍
-    db.ref('stores').on('value', snap => {
-      const data = snap.val();
-      if (data) {
-        stores = data;
-        populateStoreSelects();
-        renderStorePanel();
-        renderStatList();
-        updateMetrics();
-      }
-    });
-
-  } catch(e) {
-    console.error('Firebase init error:', e);
-    setSyncStatus('err');
-  }
+function pad(n){return String(n).padStart(4,'0');}
+function formatDisp(d){return d?d.replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1/$2/$3'):'';}
+function totalAllocated(){return stores.reduce((s,st)=>s+st.ranges.reduce((a,[f,t])=>a+(t-f+1),0),0);}
+function findStore(sn){const n=parseInt(sn,10);if(isNaN(n))return null;for(const s of stores)for(const[f,t]of s.ranges)if(n>=f&&n<=t)return s;return null;}
+function getMissByStore(sid){return Object.values(missing).filter(m=>m.sid===sid).reduce((s,m)=>s+(m.count||1),0);}
+function getStoreCounts(){const c={};stores.forEach(s=>c[s.id]=0);Object.keys(collected).forEach(k=>{const s=findStore(parseInt(k,10));if(s)c[s.id]++;});return c;}
+function getStoreCollected(sid){return Object.entries(collected).filter(([k])=>{const s=findStore(parseInt(k,10));return s&&s.id===sid;}).sort((a,b)=>a[0].localeCompare(b[0]));}
+function groupByDate(entries){
+  const map=new Map();
+  for(const[k,v]of entries){const d=v.date||'（未設定日期）';if(!map.has(d))map.set(d,[]);map.get(d).push(k);}
+  return[...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([date,keys])=>({date,keys:keys.sort()}));
 }
 
-function setSyncStatus(state) {
-  const dot = document.getElementById('sync-dot');
-  const label = document.getElementById('sync-label');
-  dot.className = 'sync-dot';
-  if (state === 'ok')        { dot.classList.add('ok');   label.textContent = '即時同步中'; }
-  else if (state === 'offline') { dot.classList.add('err');  label.textContent = '離線中'; }
-  else if (state === 'no-config') { dot.classList.add('err'); label.textContent = '尚未設定 Firebase'; }
-  else                       { dot.classList.add('err');  label.textContent = '連線錯誤'; dot.classList.add('pulse'); }
+function updateMetrics(){
+  const total=Object.keys(collected).length;
+  const missTotal=Object.values(missing).reduce((s,m)=>s+(m.count||1),0);
+  const counts=getStoreCounts();
+  document.getElementById('m-grand').textContent=total+missTotal;
+  document.getElementById('m-total').textContent=total;
+  document.getElementById('m-stores').textContent=stores.filter(s=>counts[s.id]>0||getMissByStore(s.id)>0).length;
+  document.getElementById('m-rate').textContent=Math.round(total/totalAllocated()*100)+'%';
+  document.getElementById('m-miss').textContent=missTotal;
 }
 
-// ── 工具函式 ──────────────────────────────────────
-function pad(n) { return String(n).padStart(4,'0'); }
-function todayStr() {
-  const d = new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-function formatDisp(d) { return d ? d.replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1/$2/$3') : ''; }
-function totalAllocated() { return stores.reduce((s,st)=>s+st.ranges.reduce((a,[f,t])=>a+(t-f+1),0),0); }
-function findStore(sn) {
-  const n = parseInt(sn,10);
-  if (isNaN(n)) return null;
-  for (const s of stores) for (const [f,t] of s.ranges) if (n>=f && n<=t) return s;
-  return null;
-}
+function toggleStore(sid){openStores.has(sid)?openStores.delete(sid):openStores.add(sid);renderStatList();}
 
-// ── 輸入流水號 ────────────────────────────────────
-function updateDateHint() {
-  document.getElementById('date-hint').textContent =
-    document.getElementById('collect-date').value ? '之後新增的流水號均套用此日期' : '（未設定日期）';
-}
-function updateBatchDateHint() {
-  document.getElementById('batch-date-hint').textContent =
-    document.getElementById('batch-date').value ? '批次匯入將套用此日期' : '（未設定日期）';
-}
-
-function addSN(val) {
-  const inp = document.getElementById('sn-input');
-  const raw = (val || inp.value).trim();
-  const date = document.getElementById('collect-date').value;
-  document.getElementById('err').textContent = '';
-  if (!raw) { document.getElementById('err').textContent = '請輸入流水號'; return; }
-  if (isNaN(parseInt(raw,10))) { document.getElementById('err').textContent = '流水號必須為數字'; return; }
-  const key = pad(parseInt(raw,10));
-  if (collected[key]) { document.getElementById('err').textContent = '此流水號已輸入過'; return; }
-  if (!findStore(raw)) {
-    document.getElementById('err').textContent = `「${key}」找不到對應店家，請確認號碼是否在有效範圍內`;
-    return;
-  }
-  if (db) {
-    db.ref('collected/' + key).set({ date: date || '' });
-  } else {
-    collected[key] = { date: date || '' };
-    updateHint(); renderStatList(); updateMetrics();
-  }
-  inp.value = '';
-}
-
-function removeSN(k) {
-  if (db) { db.ref('collected/' + k).remove(); }
-  else { delete collected[k]; updateHint(); renderStatList(); updateMetrics(); }
-}
-
-function updateHint() {
-  const cnt = Object.keys(collected).length;
-  document.getElementById('tags-hint').textContent = cnt ? `已輸入 ${cnt} 筆` : '';
-}
-
-function processBatch() {
-  const txt = document.getElementById('batch-txt').value;
-  const date = document.getElementById('batch-date').value || '';
-  const items = txt.split(/[\n,\s]+/).map(s=>s.trim()).filter(Boolean);
-  let ok=0, dup=0;
-  const updates = {};
-  const badFmt = [];
-  const noStoreList = [];
-  for (const it of items) {
-    if (isNaN(parseInt(it,10))) { badFmt.push(it); continue; }
-    const key = pad(parseInt(it,10));
-    if (collected[key]) { dup++; continue; }
-    if (!findStore(it)) { noStoreList.push(key); continue; }
-    updates[key] = { date };
-    ok++;
-  }
-  if (db && Object.keys(updates).length) {
-    db.ref('collected').update(updates);
-  } else {
-    Object.assign(collected, updates);
-    updateHint(); renderStatList(); updateMetrics();
-  }
-  document.getElementById('batch-txt').value = '';
-  switchTab('input');
-
-  const msgs = [];
-  if (ok) msgs.push(`✅ 成功匯入 ${ok} 筆`);
-  if (dup) msgs.push(`⚠️ 重複略過 ${dup} 筆`);
-  if (noStoreList.length) msgs.push(`❌ 找不到對應店家 ${noStoreList.length} 筆：\n   ${noStoreList.join('、')}`);
-  if (badFmt.length) msgs.push(`❌ 格式錯誤 ${badFmt.length} 筆：\n   ${badFmt.join('、')}`);
-  alert('批次匯入完成\n\n' + msgs.join('\n'));
-}
-
-// ── 遺漏券 ───────────────────────────────────────
-function addMissing() {
-  const sid = document.getElementById('miss-store').value;
-  const date = document.getElementById('miss-date').value;
-  const proof = document.getElementById('miss-proof').value;
-  const count = parseInt(document.getElementById('miss-count').value, 10);
-  document.getElementById('miss-err').textContent = '';
-  if (!sid) { document.getElementById('miss-err').textContent = '請選擇店家'; return; }
-  if (!date) { document.getElementById('miss-err').textContent = '請選擇消費日期'; return; }
-  if (isNaN(count) || count < 1) { document.getElementById('miss-err').textContent = '筆數請輸入 1 以上的數字'; return; }
-  const store = stores.find(s=>s.id===sid);
-  const rec = { sid, name: store.name, date, proof, count };
-  if (db) {
-    db.ref('missing').push(rec);
-  } else {
-    const id = 'm' + Date.now();
-    missing[id] = rec;
-    renderMissList(); renderStatList(); updateMetrics();
-  }
-  document.getElementById('miss-store').value = '';
-  document.getElementById('miss-date').value = '';
-  document.getElementById('miss-count').value = '1';
-}
-
-function removeMissing(mid) {
-  if (db) { db.ref('missing/' + mid).remove(); }
-  else { delete missing[mid]; renderMissList(); renderStatList(); updateMetrics(); }
-}
-
-function renderMissList() {
-  const el = document.getElementById('miss-list');
-  const all = Object.entries(missing);
-  if (!all.length) { el.innerHTML = '<p style="font-size:13px;color:#9ca3af;font-style:italic">尚無遺漏券登記</p>'; return; }
-
-  const dates = [...new Set(all.map(([,m])=>m.date||'（未設定日期）'))].sort((a,b)=>b.localeCompare(a));
-  const sel = document.getElementById('miss-date-filter');
-  const currentVal = sel ? sel.value : dates[0];
-  const selectedDate = dates.includes(currentVal) ? currentVal : dates[0];
-  const filtered = all.filter(([,m])=>(m.date||'（未設定日期）')===selectedDate)
-    .sort((a,b)=>a[1].name.localeCompare(b[1].name,'zh-TW'));
-
-  const totalAll = Object.values(missing).reduce((s,m)=>s+(m.count||1),0);
-  const totalDay = filtered.reduce((s,[,m])=>s+(m.count||1),0);
-
-  el.innerHTML = `
-    <div class="date-filter-row">
-      <label>📅 查看日期</label>
-      <select id="miss-date-filter" onchange="renderMissList()">
-        ${dates.map(d=>{
-          const dayTotal = all.filter(([,m])=>(m.date||'（未設定日期）')===d).reduce((s,[,m])=>s+(m.count||1),0);
-          return `<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${dayTotal} 筆）</option>`;
-        }).join('')}
-      </select>
-      <span class="total-cnt">共 ${totalAll} 筆</span>
-    </div>
-    ${filtered.length ? `
-    <div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
-      ${filtered.map(([mid,m])=>{
-        const proofClass = m.proof==='收據' ? 'proof-receipt' : 'proof-none';
-        const proofIcon = m.proof==='收據' ? '🧾' : '❌';
-        const cnt = m.count || 1;
-        return `<div class="miss-list-item">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0">
-            <span style="font-size:13px">${m.name}</span>
-            <span class="proof-chip ${proofClass}">${proofIcon} ${m.proof||'—'}</span>
-            <span style="font-size:12px;font-weight:600;color:#1a1a18;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${cnt} 筆</span>
-          </div>
-          ${isEditUnlocked ? `<span style="cursor:pointer;font-size:18px;color:#9ca3af;padding:0 4px;flex-shrink:0" onclick="removeMissing('${mid}')" title="刪除">×</span>` : ''}
-        </div>`;
-      }).join('')}
-    </div>
-    <p style="font-size:12px;color:#9ca3af;margin-top:6px">當日合計 ${totalDay} 筆</p>
-    ` : '<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無登記資料</p>'}`;
-}
-
-// ── 指標 ─────────────────────────────────────────
-function getStoreCounts() {
-  const c = {}; stores.forEach(s=>c[s.id]=0);
-  Object.keys(collected).forEach(k=>{const s=findStore(parseInt(k,10));if(s)c[s.id]++;});
-  return c;
-}
-function getMissByStore(sid) { return Object.values(missing).filter(m=>m.sid===sid).reduce((s,m)=>s+(m.count||1),0); }
-function getStoreCollected(sid) {
-  return Object.entries(collected)
-    .filter(([k])=>{const s=findStore(parseInt(k,10));return s&&s.id===sid;})
-    .sort((a,b)=>a[0].localeCompare(b[0]));
-}
-function groupByDate(entries) {
-  const map = new Map();
-  for (const [k,v] of entries) {
-    const d = v.date || '（未設定日期）';
-    if (!map.has(d)) map.set(d,[]);
-    map.get(d).push(k);
-  }
-  return [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([date,keys])=>({date,keys:keys.sort()}));
-}
-function updateMetrics() {
-  const total = Object.keys(collected).length;
-  const missTotal = Object.values(missing).reduce((s,m)=>s+(m.count||1),0);
-  const counts = getStoreCounts();
-  document.getElementById('m-grand').textContent = total + missTotal;
-  document.getElementById('m-total').textContent = total;
-  document.getElementById('m-stores').textContent = stores.filter(s=>counts[s.id]>0||getMissByStore(s.id)>0).length;
-  document.getElementById('m-rate').textContent = Math.round(total/totalAllocated()*100)+'%';
-  document.getElementById('m-miss').textContent = missTotal;
-}
-
-// ── 統計列表 ──────────────────────────────────────
-function toggleStore(sid) { openStores.has(sid)?openStores.delete(sid):openStores.add(sid); renderStatList(); }
-
-function renderStatList() {
-  const counts = getStoreCounts();
-  const rows = stores.map(s=>({...s,count:counts[s.id]||0,missCount:getMissByStore(s.id)}))
+function renderStatList(){
+  const counts=getStoreCounts();
+  const rows=stores.map(s=>({...s,count:counts[s.id]||0,missCount:getMissByStore(s.id)}))
     .filter(r=>r.count>0||r.missCount>0).sort((a,b)=>(b.count+b.missCount)-(a.count+a.missCount));
-  const el = document.getElementById('stat-list');
-  if (!rows.length) { el.innerHTML='<div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">尚無回收資料</div>'; return; }
-  const max = Math.max(...rows.map(r=>r.count+r.missCount),1);
-  el.innerHTML = rows.map(r=>{
-    const alloc = r.ranges.reduce((a,[f,t])=>a+(t-f+1),0);
-    const total = Object.keys(collected).length;
-    const pct = total>0 ? Math.round(r.count/total*100) : 0;
-    const isOpen = openStores.has(r.id);
-    const snEntries = getStoreCollected(r.id);
-    const groups = groupByDate(snEntries);
-    const missList = Object.entries(missing).filter(([,m])=>m.sid===r.id).sort((a,b)=>b[1].date.localeCompare(a[1].date));
-    const snGroupsHtml = groups.length
-      ? groups.map(g=>`<div class="date-group">
-          <div class="date-group-label">📅 ${formatDisp(g.date)||g.date}<span class="cnt">· ${g.keys.length} 筆</span></div>
-          <div class="sn-grid">${g.keys.map(k=>`<span class="sn-chip">${k}${isEditUnlocked?`<span class="rx" onclick="event.stopPropagation();removeSN('${k}')">×</span>`:''}</span>`).join('')}</div>
-        </div>`).join('')
-      : '<span class="empty-txt">尚無回收紀錄</span>';
+  const el=document.getElementById('stat-list');
+  if(!rows.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">尚無回收資料</div>';return;}
+  const max=Math.max(...rows.map(r=>r.count+r.missCount),1);
+  el.innerHTML=rows.map(r=>{
+    const alloc=r.ranges.reduce((a,[f,t])=>a+(t-f+1),0);
+    const total=Object.keys(collected).length;
+    const pct=total>0?Math.round(r.count/total*100):0;
+    const isOpen=openStores.has(r.id);
+    const snEntries=getStoreCollected(r.id);
+    const groups=groupByDate(snEntries);
+    const missList=Object.entries(missing).filter(([,m])=>m.sid===r.id).sort((a,b)=>b[1].date.localeCompare(a[1].date));
+    const snGroupsHtml=groups.length?groups.map(g=>`<div class="date-group">
+      <div class="date-group-label">📅 ${formatDisp(g.date)||g.date}<span class="cnt">· ${g.keys.length} 筆</span></div>
+      <div class="sn-grid">${g.keys.map(k=>`<span class="sn-chip">${k}</span>`).join('')}</div>
+    </div>`).join(''):'<span class="empty-txt">尚無回收紀錄</span>';
     return `<div class="stat-row">
       <div class="stat-main" onclick="toggleStore('${r.id}')">
         <span class="chevron ${isOpen?'open':''}">▶</span>
-        <span class="sname">
-          <span class="sname-full">${r.name}</span>
-          <span class="sname-short">${[...r.name].slice(0,3).join('')}…</span>
-        </span>
+        <span class="sname"><span class="sname-full">${r.name}</span><span class="sname-short">${[...r.name].slice(0,3).join('')}…</span></span>
         <span class="salloc">${alloc}</span>
         <span class="scnt">${r.count}</span>
         <span class="smiss" style="${r.missCount>0?'':'color:#9ca3af;font-weight:400'}">${r.missCount>0?r.missCount:'－'}</span>
         <span style="font-size:11px;color:#9ca3af;font-weight:400;text-align:right">${pct}%</span>
-        <div style="height:5px;background:#e5e3db;border-radius:99px;overflow:hidden">
-          <div style="height:100%;border-radius:99px;background:#9ca3af;width:${Math.round((r.count+r.missCount)/max*100)}%;transition:width .3s"></div>
-        </div>
+        <div style="padding:0 2px"><div style="height:5px;background:#e5e3db;border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:#9ca3af;width:${Math.round((r.count+r.missCount)/max*100)}%;transition:width .3s"></div></div></div>
       </div>
       <div class="stat-detail ${isOpen?'open':''}">
         <div class="detail-sec">
@@ -707,11 +302,11 @@ function renderStatList() {
           ${snGroupsHtml}
         </div>
         ${missList.length?`<div class="detail-sec">
-          <div class="detail-title" style="color:#b45309">遺漏券登記（${missList.length} 筆）</div>
-          <div>${missList.map(([mid,m])=>{
-            const proofClass = m.proof==='收據'?'proof-receipt':'proof-none';
-            const proofIcon = m.proof==='收據'?'🧾':'❌';
-            return `<span class="miss-chip">⚠️ ${formatDisp(m.date)} <span class="proof-chip ${proofClass}" style="margin-left:2px">${proofIcon} ${m.proof||'—'}</span> <span style="font-weight:600">${m.count||1}筆</span>${isEditUnlocked?`<span class="rx" onclick="event.stopPropagation();removeMissing('${mid}')">×</span>`:''}</span>`;
+          <div class="detail-title" style="color:#b45309">遺漏券登記（${missList.reduce((s,[,m])=>s+(m.count||1),0)} 筆）</div>
+          <div>${missList.map(([,m])=>{
+            const pc=m.proof==='收據'?'proof-receipt':'proof-none';
+            const pi=m.proof==='收據'?'🧾':'❌';
+            return `<span class="miss-chip">⚠️ ${formatDisp(m.date)} <span class="proof-chip ${pc}">${pi} ${m.proof||'—'}</span> <span style="font-weight:600">${m.count||1}筆</span></span>`;
           }).join('')}</div>
         </div>`:''}
       </div>
@@ -719,314 +314,176 @@ function renderStatList() {
   }).join('');
 }
 
-// ── 每日登記 ─────────────────────────────────────
-function renderDailyList() {
-  const el = document.getElementById('daily-list');
-  if (!el) return;
-
-  // 建立日期 → 資料 map
-  const dateMap = new Map();
-  Object.entries(collected).forEach(([k, v]) => {
-    const d = v.date || '（未設定日期）';
-    if (!dateMap.has(d)) dateMap.set(d, { sns: [], missing: [] });
-    const store = findStore(parseInt(k, 10));
-    dateMap.get(d).sns.push({ key: k, storeName: store ? store.name : '未知店家' });
-  });
-  Object.entries(missing).forEach(([mid, m]) => {
-    const d = m.date || '（未設定日期）';
-    if (!dateMap.has(d)) dateMap.set(d, { sns: [], missing: [] });
-    dateMap.get(d).missing.push({ mid, m });
-  });
-
-  if (!dateMap.size) {
-    el.innerHTML = '<div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">尚無資料</div>';
-    return;
-  }
-
-  const dates = [...dateMap.keys()].sort((a, b) => b.localeCompare(a));
-  const sel = document.getElementById('daily-date-filter');
-  const currentVal = sel ? sel.value : '';
-  const selectedDate = dates.includes(currentVal) ? currentVal : dates[0];
-  const data = dateMap.get(selectedDate);
-
-  // group SNs by store
-  const storeSnMap = new Map();
-  data.sns.forEach(({ key, storeName }) => {
-    if (!storeSnMap.has(storeName)) storeSnMap.set(storeName, []);
-    storeSnMap.get(storeName).push(key);
-  });
-
-  const totalAll = [...dateMap.values()].reduce((s, d) => s + d.sns.length + d.missing.reduce((a,x)=>a+(x.m.count||1),0), 0);
-
-  el.innerHTML = `
+function renderMissList(){
+  const el=document.getElementById('miss-list');
+  const all=Object.entries(missing);
+  if(!all.length){el.innerHTML='<p style="font-size:13px;color:#9ca3af;font-style:italic">尚無遺漏券登記</p>';return;}
+  const dates=[...new Set(all.map(([,m])=>m.date||'（未設定日期）'))].sort((a,b)=>b.localeCompare(a));
+  const sel=document.getElementById('miss-date-filter');
+  const cur=sel?sel.value:dates[0];
+  const selectedDate=dates.includes(cur)?cur:dates[0];
+  const filtered=all.filter(([,m])=>(m.date||'（未設定日期）')===selectedDate).sort((a,b)=>a[1].name.localeCompare(b[1].name,'zh-TW'));
+  const totalAll=Object.values(missing).reduce((s,m)=>s+(m.count||1),0);
+  el.innerHTML=`
     <div class="date-filter-row">
       <label>📅 查看日期</label>
-      <select id="daily-date-filter" onchange="renderDailyList()">
-        ${dates.map(d => {
-          const dd = dateMap.get(d);
-          const cnt = dd.sns.length + dd.missing.reduce((a,x)=>a+(x.m.count||1),0);
-          return `<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${cnt} 筆）</option>`;
+      <select id="miss-date-filter" onchange="renderMissList()">
+        ${dates.map(d=>{
+          const dt=all.filter(([,m])=>(m.date||'（未設定日期）')===d).reduce((s,[,m])=>s+(m.count||1),0);
+          return `<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${dt} 筆）</option>`;
         }).join('')}
       </select>
       <span class="total-cnt">共 ${totalAll} 筆</span>
-      ${isEditUnlocked ? `<button class="btn-del" onclick="deleteDay('${selectedDate}')">🗑 刪除當日全部</button>` : ''}
     </div>
-
-    ${data.sns.length ? `
-      <div style="margin-bottom:14px">
-        <div style="font-size:11px;font-weight:600;color:#6b6b67;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">
-          流水號明細（${data.sns.length} 筆）
-        </div>
-        ${[...storeSnMap.entries()].map(([storeName, keys]) => `
-          <div style="margin-bottom:10px">
-            <div style="font-size:12px;color:#6b6b67;margin-bottom:4px">${storeName}</div>
-            <div class="sn-grid">${keys.sort().map(k => `<span class="sn-chip">${k}</span>`).join('')}</div>
-          </div>`).join('')}
-      </div>` : ''}
-
-    ${data.missing.length ? `
-      <div>
-        <div style="font-size:11px;font-weight:600;color:#b45309;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">
-          遺漏券明細（${data.missing.length} 筆）
-        </div>
-        <div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
-          ${data.missing.map(({ mid, m }) => {
-            const proofClass = m.proof === '收據' ? 'proof-receipt' : 'proof-none';
-            const proofIcon = m.proof === '收據' ? '🧾' : '❌';
-            return `<div class="miss-list-item">
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0">
-                <span style="font-size:13px">${m.name}</span>
-                <span class="proof-chip ${proofClass}">${proofIcon} ${m.proof||'—'}</span>
-                <span style="font-size:12px;font-weight:600;color:#1a1a18;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span>
-              </div>
-              ${isEditUnlocked ? `<span style="cursor:pointer;font-size:18px;color:#9ca3af;padding:0 4px;flex-shrink:0" onclick="removeMissing('${mid}')" title="刪除">×</span>` : ''}
-            </div>`;
-          }).join('')}
-        </div>
-      </div>` : ''}
-
-    ${!data.sns.length && !data.missing.length ? '<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無登記資料</p>' : ''}`;
-}
-
-function deleteDay(date) {
-  const snKeys = Object.entries(collected).filter(([,v])=>(v.date||'（未設定日期）')===date).map(([k])=>k);
-  const midKeys = Object.entries(missing).filter(([,m])=>(m.date||'（未設定日期）')===date).map(([k])=>k);
-  const total = snKeys.length + midKeys.length;
-  if (!total) return;
-  if (!confirm(`確定要刪除 ${formatDisp(date)||date} 的全部 ${total} 筆資料嗎？\n（流水號 ${snKeys.length} 筆 ＋ 遺漏券 ${midKeys.length} 筆）\n\n此操作無法復原。`)) return;
-  if (db) {
-    const updates = {};
-    snKeys.forEach(k => updates['collected/' + k] = null);
-    midKeys.forEach(k => updates['missing/' + k] = null);
-    db.ref().update(updates);
-  } else {
-    snKeys.forEach(k => delete collected[k]);
-    midKeys.forEach(k => delete missing[k]);
-    renderDailyList(); renderStatList(); updateMetrics(); updateHint();
-  }
-}
-function populateStoreSelects() {
-  const sorted = [...stores].sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'));
-  const opts = '<option value="">— 選擇店家 —</option>' + sorted.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  document.getElementById('miss-store').innerHTML = opts;
-  document.getElementById('mgmt-store-select').innerHTML = opts;
-}
-
-function renderStorePanel() {
-  const sid = document.getElementById('mgmt-store-select').value;
-  const panel = document.getElementById('store-detail-panel');
-  if (!sid) { panel.style.display='none'; return; }
-  const si = stores.findIndex(s=>s.id===sid);
-  const s = stores[si];
-  const alloc = s.ranges.reduce((a,[f,t])=>a+(t-f+1),0);
-
-  // 建立該店家的每日兌換資料
-  const dayMap = new Map();
-  Object.entries(collected).forEach(([k,v])=>{
-    const store = findStore(parseInt(k,10));
-    if (!store || store.id !== sid) return;
-    const d = v.date || '（未設定日期）';
-    if (!dayMap.has(d)) dayMap.set(d, { sns:[], missCount:0 });
-    dayMap.get(d).sns.push(k);
-  });
-  Object.values(missing).forEach(m=>{
-    if (m.sid !== sid) return;
-    const d = m.date || '（未設定日期）';
-    if (!dayMap.has(d)) dayMap.set(d, { sns:[], missCount:0 });
-    dayMap.get(d).missCount += (m.count||1);
-  });
-  const sortedDays = [...dayMap.entries()].sort((a,b)=>b[0].localeCompare(a[0]));
-
-  panel.style.display = 'block';
-  panel.innerHTML = `<div class="store-panel">
-    <div class="store-panel-name">${s.name}</div>
-
-    <div style="font-size:12px;color:#6b6b67;margin-bottom:6px">流水號範圍 <span style="color:#9ca3af">（共 ${alloc} 張）</span></div>
-    <div style="margin-bottom:14px">${s.ranges.map(([f,t],ri)=>`<span class="rtag">${pad(f)}–${pad(t)} ${isEditUnlocked?`<span style="cursor:pointer;color:#9ca3af" onclick="removeRange('${sid}',${ri})">×</span>`:''}</span>`).join('')}</div>
-
-    ${isEditUnlocked ? `<div class="add-rrow" style="margin-bottom:14px">
-      <span style="font-size:12px;color:#6b6b67">追加範圍：</span>
-      <input type="text" id="rf-panel" placeholder="起始號"/>
-      <span style="font-size:12px;color:#9ca3af">–</span>
-      <input type="text" id="rt-panel" placeholder="結束號"/>
-      <button onclick="addRange('${sid}')">＋ 新增</button>
-    </div>
-    <div id="range-err" class="err-msg" style="margin-bottom:10px"></div>` : ''}
-
-    <div style="font-size:12px;color:#6b6b67;margin-bottom:8px;padding-top:${isEditUnlocked?'0':'4px'}">
-      各日兌換紀錄
-      <span style="color:#9ca3af">（流水號 ${Object.entries(collected).filter(([k])=>{const st=findStore(parseInt(k,10));return st&&st.id===sid;}).length} 筆）</span>
-    </div>
-    ${sortedDays.length ? sortedDays.map(([date, data])=>{
-      const snSorted = data.sns.sort();
-      return `<div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden;margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f4f0;border-bottom:${data.sns.length?'1px':'0'} solid #e5e3db">
-          <span style="font-size:12px;font-weight:600;color:#1a1a18">📅 ${formatDisp(date)||date}</span>
-          <div style="display:flex;gap:6px;align-items:center">
-            ${data.sns.length ? `<span style="font-size:11px;background:#e5e3db;border-radius:4px;padding:1px 7px;color:#1a1a18">流水號 ${data.sns.length} 筆</span>` : ''}
-            ${data.missCount ? `<span style="font-size:11px;background:#fef3c7;border:1px solid #f59e0b;border-radius:4px;padding:1px 7px;color:#92400e">遺漏 ${data.missCount} 筆</span>` : ''}
+    ${filtered.length?`<div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
+      ${filtered.map(([,m])=>{
+        const pc=m.proof==='收據'?'proof-receipt':'proof-none';
+        const pi=m.proof==='收據'?'🧾':'❌';
+        return `<div class="miss-list-item">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0">
+            <span style="font-size:13px">${m.name}</span>
+            <span class="proof-chip ${pc}">${pi} ${m.proof||'—'}</span>
+            <span style="font-size:12px;font-weight:600;color:#1a1a18;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span>
           </div>
+        </div>`;
+      }).join('')}
+    </div>`:'<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無登記資料</p>'}`;
+}
+
+function renderDailyList(){
+  const el=document.getElementById('daily-list');
+  if(!el)return;
+  const dateMap=new Map();
+  Object.entries(collected).forEach(([k,v])=>{
+    const d=v.date||'（未設定日期）';
+    if(!dateMap.has(d))dateMap.set(d,{sns:[],missing:[]});
+    const store=findStore(parseInt(k,10));
+    dateMap.get(d).sns.push({key:k,storeName:store?store.name:'未知店家'});
+  });
+  Object.entries(missing).forEach(([mid,m])=>{
+    const d=m.date||'（未設定日期）';
+    if(!dateMap.has(d))dateMap.set(d,{sns:[],missing:[]});
+    dateMap.get(d).missing.push({mid,m});
+  });
+  if(!dateMap.size){el.innerHTML='<div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">尚無資料</div>';return;}
+  const dates=[...dateMap.keys()].sort((a,b)=>b.localeCompare(a));
+  const sel=document.getElementById('daily-date-filter');
+  const cur=sel?sel.value:'';
+  const selectedDate=dates.includes(cur)?cur:dates[0];
+  const data=dateMap.get(selectedDate);
+  const storeSnMap=new Map();
+  data.sns.forEach(({key,storeName})=>{if(!storeSnMap.has(storeName))storeSnMap.set(storeName,[]);storeSnMap.get(storeName).push(key);});
+  const totalAll=[...dateMap.values()].reduce((s,d)=>s+d.sns.length+d.missing.reduce((a,x)=>a+(x.m.count||1),0),0);
+  el.innerHTML=`
+    <div class="date-filter-row">
+      <label>📅 查看日期</label>
+      <select id="daily-date-filter" onchange="renderDailyList()">
+        ${dates.map(d=>{const dd=dateMap.get(d);const cnt=dd.sns.length+dd.missing.reduce((a,x)=>a+(x.m.count||1),0);return`<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${cnt} 筆）</option>`;}).join('')}
+      </select>
+      <span class="total-cnt">共 ${totalAll} 筆</span>
+    </div>
+    ${data.sns.length?`<div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:600;color:#6b6b67;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">流水號明細（${data.sns.length} 筆）</div>
+      ${[...storeSnMap.entries()].map(([sn,keys])=>`<div style="margin-bottom:10px"><div style="font-size:12px;color:#6b6b67;margin-bottom:4px">${sn}</div><div class="sn-grid">${keys.sort().map(k=>`<span class="sn-chip">${k}</span>`).join('')}</div></div>`).join('')}
+    </div>`:''}
+    ${data.missing.length?`<div>
+      <div style="font-size:11px;font-weight:600;color:#b45309;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">遺漏券明細（${data.missing.reduce((a,x)=>a+(x.m.count||1),0)} 筆）</div>
+      <div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
+        ${data.missing.map(({m})=>{const pc=m.proof==='收據'?'proof-receipt':'proof-none';const pi=m.proof==='收據'?'🧾':'❌';return`<div class="miss-list-item"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0"><span style="font-size:13px">${m.name}</span><span class="proof-chip ${pc}">${pi} ${m.proof||'—'}</span><span style="font-size:12px;font-weight:600;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span></div></div>`;}).join('')}
+      </div>
+    </div>`:''}`;
+}
+
+function populateStoreSelects(){
+  const sorted=[...stores].sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'));
+  document.getElementById('mgmt-store-select').innerHTML='<option value="">— 選擇店家 —</option>'+sorted.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+function renderStorePanel(){
+  const sid=document.getElementById('mgmt-store-select').value;
+  const panel=document.getElementById('store-detail-panel');
+  if(!sid){panel.style.display='none';return;}
+  const s=stores.find(x=>x.id===sid);
+  const alloc=s.ranges.reduce((a,[f,t])=>a+(t-f+1),0);
+  const dayMap=new Map();
+  Object.entries(collected).forEach(([k,v])=>{const st=findStore(parseInt(k,10));if(!st||st.id!==sid)return;const d=v.date||'（未設定日期）';if(!dayMap.has(d))dayMap.set(d,{sns:[],missCount:0});dayMap.get(d).sns.push(k);});
+  Object.values(missing).forEach(m=>{if(m.sid!==sid)return;const d=m.date||'（未設定日期）';if(!dayMap.has(d))dayMap.set(d,{sns:[],missCount:0});dayMap.get(d).missCount+=(m.count||1);});
+  const sortedDays=[...dayMap.entries()].sort((a,b)=>b[0].localeCompare(a[0]));
+  panel.style.display='block';
+  panel.innerHTML=`<div style="background:#f5f4f0;border-radius:10px;padding:14px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px">${s.name}</div>
+    <div style="font-size:12px;color:#6b6b67;margin-bottom:6px">流水號範圍 <span style="color:#9ca3af">（共 ${alloc} 張）</span></div>
+    <div style="margin-bottom:14px">${s.ranges.map(([f,t])=>`<span style="display:inline-block;background:#fff;border:1px solid #e5e3db;border-radius:4px;padding:2px 8px;font-family:monospace;font-size:12px;color:#6b6b67;margin:2px">${pad(f)}–${pad(t)}</span>`).join('')}</div>
+    <div style="font-size:12px;color:#6b6b67;margin-bottom:8px">各日兌換紀錄</div>
+    ${sortedDays.length?sortedDays.map(([date,data])=>`<div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f4f0;border-bottom:${data.sns.length?'1px':'0'} solid #e5e3db">
+        <span style="font-size:12px;font-weight:600">📅 ${formatDisp(date)||date}</span>
+        <div style="display:flex;gap:6px">
+          ${data.sns.length?`<span style="font-size:11px;background:#e5e3db;border-radius:4px;padding:1px 7px">流水號 ${data.sns.length} 筆</span>`:''}
+          ${data.missCount?`<span style="font-size:11px;background:#fef3c7;border:1px solid #f59e0b;border-radius:4px;padding:1px 7px;color:#92400e">遺漏 ${data.missCount} 筆</span>`:''}
         </div>
-        ${data.sns.length ? `<div style="padding:8px 12px"><div class="sn-grid">${snSorted.map(k=>`<span class="sn-chip">${k}</span>`).join('')}</div></div>` : ''}
-      </div>`;
-    }).join('') : `<p style="font-size:13px;color:#9ca3af;font-style:italic">尚無兌換紀錄</p>`}
+      </div>
+      ${data.sns.length?`<div style="padding:8px 12px"><div class="sn-grid">${data.sns.sort().map(k=>`<span class="sn-chip">${k}</span>`).join('')}</div></div>`:''}
+    </div>`).join(''):'<p style="font-size:13px;color:#9ca3af;font-style:italic">尚無兌換紀錄</p>'}
   </div>`;
 }
 
-function addRange(sid) {
-  const f = parseInt(document.getElementById('rf-panel').value,10);
-  const t = parseInt(document.getElementById('rt-panel').value,10);
-  const errEl = document.getElementById('range-err');
-  errEl.textContent = '';
-  if (isNaN(f)||isNaN(t)) { errEl.textContent='請輸入有效的數字範圍'; return; }
-  if (f>t) { errEl.textContent='起始號碼不能大於結束號碼'; return; }
-  const si = stores.findIndex(s=>s.id===sid);
-  for (let n=f;n<=t;n++) for (let j=0;j<stores.length;j++) {
-    if (j===si) continue;
-    for (const [sf,st] of stores[j].ranges) if (n>=sf&&n<=st) { errEl.textContent=`號碼 ${pad(n)} 與「${stores[j].name}」的範圍重疊`; return; }
-  }
-  const updated = JSON.parse(JSON.stringify(stores));
-  updated[si].ranges.push([f,t]);
-  if (db) { db.ref('stores').set(updated); }
-  else { stores = updated; renderStorePanel(); updateMetrics(); }
+function switchTab(t){
+  ['daily','missing','stores'].forEach(id=>{const el=document.getElementById('tab-'+id);if(el)el.style.display=id===t?'':'none';});
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='daily')||(i===1&&t==='missing')||(i===2&&t==='stores')));
+  if(t==='missing')renderMissList();
+  if(t==='daily')renderDailyList();
+  if(t==='stores'){populateStoreSelects();renderStorePanel();}
 }
 
-function removeRange(sid, ri) {
-  const si = stores.findIndex(s=>s.id===sid);
-  if (stores[si].ranges.length<=1) { alert('至少需保留一個流水號範圍'); return; }
-  const updated = JSON.parse(JSON.stringify(stores));
-  updated[si].ranges.splice(ri,1);
-  if (db) { db.ref('stores').set(updated); }
-  else { stores = updated; renderStorePanel(); updateMetrics(); }
-}
-
-// ── 頁籤切換 ──────────────────────────────────────
-function switchTab(t) {
-  ['input','batch','missing','daily','stores'].forEach(id=>{
-    const el = document.getElementById('tab-'+id);
-    if (el) el.style.display = id===t ? '' : 'none';
-  });
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',
-    (i===0&&t==='input')||(i===1&&t==='missing')||(i===2&&t==='daily')||(i===3&&t==='stores')));
-  if (t==='missing') { populateStoreSelects(); renderMissList(); }
-  if (t==='daily')   { renderDailyList(); }
-  if (t==='stores')  { populateStoreSelects(); renderStorePanel(); }
-}
-function showBatch() {
-  ['input','batch','missing','stores'].forEach(id=>{const el=document.getElementById('tab-'+id);if(el)el.style.display=id==='batch'?'':'none';});
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  const cur = document.getElementById('collect-date').value;
-  if (cur) document.getElementById('batch-date').value = cur;
-  updateBatchDateHint();
-}
-
-// ── 匯出 CSV ──────────────────────────────────────
-function exportCSV() {
-  const counts = getStoreCounts();
-  const rows = [['店家名稱','流水號範圍','配發張數','回收數量','遺漏券登記','回收率','已回收流水號（含回收日期）','遺漏日期','憑證類型']];
+function exportCSV(){
+  const counts=getStoreCounts();
+  const rows=[['店家名稱','流水號範圍','配發張數','回收數量','遺漏券登記','回收率','已回收流水號（含回收日期）','遺漏日期','憑證類型']];
   stores.forEach(s=>{
-    const alloc = s.ranges.reduce((a,[f,t])=>a+(t-f+1),0);
-    const cnt = counts[s.id]||0;
-    const missCount = getMissByStore(s.id);
-    const rangeStr = s.ranges.map(([f,t])=>pad(f)+'-'+pad(t)).join(' + ');
-    const snStr = getStoreCollected(s.id).map(([k,v])=>v.date?`${k}(${v.date})`:k).join(' ');
-    const missEntries = Object.values(missing).filter(m=>m.sid===s.id);
-    const missDates = missEntries.map(m=>m.date).join(' ');
-    const missProofs = missEntries.map(m=>m.proof||'—').join(' ');
+    const alloc=s.ranges.reduce((a,[f,t])=>a+(t-f+1),0);
+    const cnt=counts[s.id]||0;
+    const missCount=getMissByStore(s.id);
+    const rangeStr=s.ranges.map(([f,t])=>pad(f)+'-'+pad(t)).join(' + ');
+    const snStr=getStoreCollected(s.id).map(([k,v])=>v.date?`${k}(${v.date})`:k).join(' ');
+    const missEntries=Object.values(missing).filter(m=>m.sid===s.id);
+    const missDates=missEntries.map(m=>m.date).join(' ');
+    const missProofs=missEntries.map(m=>m.proof||'—').join(' ');
     rows.push([s.name,rangeStr,alloc,cnt,missCount,alloc?Math.round(cnt/alloc*100)+'%':'0%',snStr,missDates,missProofs]);
   });
-  const csv = rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = '消費證明券統計.csv';
-  a.click();
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='消費證明券統計（封存）.csv';a.click();
 }
 
-// ── 密碼鎖 ───────────────────────────────────────
-const EDIT_PASSWORD = '4254';
-let isEditUnlocked = false;
-
-function applyLockState() {
-  const btn = document.getElementById('lock-btn');
-  const lbl = document.getElementById('lock-label');
-  if (isEditUnlocked) {
-    document.body.classList.remove('edit-locked');
-    btn.classList.add('unlocked');
-    lbl.textContent = '編輯中';
-  } else {
-    document.body.classList.add('edit-locked');
-    btn.classList.remove('unlocked');
-    lbl.textContent = '僅限檢視';
-  }
-  // 重新渲染有刪除按鈕的區塊
-  renderStatList();
-  renderMissList();
-  renderDailyList();
+function initFirebase(){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const db=firebase.database();
+    db.ref('.info/connected').on('value',snap=>{
+      const ok=!!snap.val();
+      const dot=document.getElementById('sync-dot');
+      const lbl=document.getElementById('sync-label');
+      dot.className='sync-dot'+(ok?' ok':' err');
+      lbl.textContent=ok?'即時同步中':'離線中';
+    });
+    db.ref('collected').on('value',snap=>{
+      collected=snap.val()||{};
+      renderStatList();renderDailyList();updateMetrics();
+      if(document.getElementById('tab-stores').style.display!=='none')renderStorePanel();
+    });
+    db.ref('missing').on('value',snap=>{
+      missing=snap.val()||{};
+      renderStatList();renderMissList();renderDailyList();updateMetrics();
+      if(document.getElementById('tab-stores').style.display!=='none')renderStorePanel();
+    });
+    db.ref('stores').on('value',snap=>{
+      const data=snap.val();
+      if(data){stores=data;populateStoreSelects();renderStatList();updateMetrics();}
+    });
+  }catch(e){console.error('Firebase error:',e);}
 }
 
-function lockBtnClick() {
-  if (isEditUnlocked) {
-    isEditUnlocked = false;
-    applyLockState();
-  } else {
-    document.getElementById('pwd-input').value = '';
-    document.getElementById('pwd-err').textContent = '';
-    document.getElementById('lock-overlay').classList.add('show');
-    setTimeout(()=>document.getElementById('pwd-input').focus(), 100);
-  }
-}
-
-function submitPwd() {
-  const val = document.getElementById('pwd-input').value;
-  if (val === EDIT_PASSWORD) {
-    isEditUnlocked = true;
-    document.getElementById('lock-overlay').classList.remove('show');
-    applyLockState();
-    switchTab('input');
-  } else {
-    document.getElementById('pwd-err').textContent = '密碼錯誤，請再試一次';
-    document.getElementById('pwd-input').value = '';
-    document.getElementById('pwd-input').focus();
-  }
-}
-
-function closeLockModal() {
-  document.getElementById('lock-overlay').classList.remove('show');
-}
-
-// 點擊遮罩關閉
-document.getElementById('lock-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeLockModal();
-});
-
-// ── 啟動 ─────────────────────────────────────────
-const t = todayStr();
-document.getElementById('collect-date').value = t;
-document.getElementById('batch-date').value = t;
-updateDateHint(); updateBatchDateHint();
-populateStoreSelects(); renderStatList(); updateMetrics();
-applyLockState();
+populateStoreSelects();renderStatList();updateMetrics();renderDailyList();
 initFirebase();
 </script>
 </body>
