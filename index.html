@@ -320,14 +320,14 @@ function renderMissList(){
   if(!all.length){el.innerHTML='<p style="font-size:13px;color:#9ca3af;font-style:italic">尚無遺漏券登記</p>';return;}
   const dates=[...new Set(all.map(([,m])=>m.date||'（未設定日期）'))].sort((a,b)=>b.localeCompare(a));
   const sel=document.getElementById('miss-date-filter');
-  const cur=sel?sel.value:dates[0];
-  const selectedDate=dates.includes(cur)?cur:dates[0];
-  const filtered=all.filter(([,m])=>(m.date||'（未設定日期）')===selectedDate).sort((a,b)=>a[1].name.localeCompare(b[1].name,'zh-TW'));
+  const selectedDate=sel?sel.value:'';
   const totalAll=Object.values(missing).reduce((s,m)=>s+(m.count||1),0);
+  const filtered=selectedDate?all.filter(([,m])=>(m.date||'（未設定日期）')===selectedDate).sort((a,b)=>a[1].name.localeCompare(b[1].name,'zh-TW')):[];
   el.innerHTML=`
     <div class="date-filter-row">
       <label>📅 查看日期</label>
       <select id="miss-date-filter" onchange="renderMissList()">
+        <option value="">— 選擇日期 —</option>
         ${dates.map(d=>{
           const dt=all.filter(([,m])=>(m.date||'（未設定日期）')===d).reduce((s,[,m])=>s+(m.count||1),0);
           return `<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${dt} 筆）</option>`;
@@ -335,19 +335,24 @@ function renderMissList(){
       </select>
       <span class="total-cnt">共 ${totalAll} 筆</span>
     </div>
-    ${filtered.length?`<div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
-      ${filtered.map(([,m])=>{
-        const pc=m.proof==='收據'?'proof-receipt':'proof-none';
-        const pi=m.proof==='收據'?'🧾':'❌';
-        return `<div class="miss-list-item">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0">
-            <span style="font-size:13px">${m.name}</span>
-            <span class="proof-chip ${pc}">${pi} ${m.proof||'—'}</span>
-            <span style="font-size:12px;font-weight:600;color:#1a1a18;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`:'<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無登記資料</p>'}`;
+    ${!selectedDate
+      ? '<p style="font-size:13px;color:#9ca3af;font-style:italic">請選擇日期以查看資料</p>'
+      : filtered.length
+        ? `<div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
+            ${filtered.map(([,m])=>{
+              const pc=m.proof==='收據'?'proof-receipt':'proof-none';
+              const pi=m.proof==='收據'?'🧾':'❌';
+              return `<div class="miss-list-item">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0">
+                  <span style="font-size:13px">${m.name}</span>
+                  <span class="proof-chip ${pc}">${pi} ${m.proof||'—'}</span>
+                  <span style="font-size:12px;font-weight:600;color:#1a1a18;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`
+        : '<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無登記資料</p>'
+    }`;
 }
 
 function renderDailyList(){
@@ -368,30 +373,35 @@ function renderDailyList(){
   if(!dateMap.size){el.innerHTML='<div style="text-align:center;padding:2rem;color:#9ca3af;font-size:13px">尚無資料</div>';return;}
   const dates=[...dateMap.keys()].sort((a,b)=>b.localeCompare(a));
   const sel=document.getElementById('daily-date-filter');
-  const cur=sel?sel.value:'';
-  const selectedDate=dates.includes(cur)?cur:dates[0];
-  const data=dateMap.get(selectedDate);
-  const storeSnMap=new Map();
-  data.sns.forEach(({key,storeName})=>{if(!storeSnMap.has(storeName))storeSnMap.set(storeName,[]);storeSnMap.get(storeName).push(key);});
+  const selectedDate=sel?sel.value:'';
   const totalAll=[...dateMap.values()].reduce((s,d)=>s+d.sns.length+d.missing.reduce((a,x)=>a+(x.m.count||1),0),0);
+
   el.innerHTML=`
     <div class="date-filter-row">
       <label>📅 查看日期</label>
       <select id="daily-date-filter" onchange="renderDailyList()">
+        <option value="">— 選擇日期 —</option>
         ${dates.map(d=>{const dd=dateMap.get(d);const cnt=dd.sns.length+dd.missing.reduce((a,x)=>a+(x.m.count||1),0);return`<option value="${d}" ${d===selectedDate?'selected':''}>${formatDisp(d)||d}（${cnt} 筆）</option>`;}).join('')}
       </select>
       <span class="total-cnt">共 ${totalAll} 筆</span>
     </div>
-    ${data.sns.length?`<div style="margin-bottom:14px">
-      <div style="font-size:11px;font-weight:600;color:#6b6b67;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">流水號明細（${data.sns.length} 筆）</div>
-      ${[...storeSnMap.entries()].map(([sn,keys])=>`<div style="margin-bottom:10px"><div style="font-size:12px;color:#6b6b67;margin-bottom:4px">${sn}</div><div class="sn-grid">${keys.sort().map(k=>`<span class="sn-chip">${k}</span>`).join('')}</div></div>`).join('')}
-    </div>`:''}
-    ${data.missing.length?`<div>
-      <div style="font-size:11px;font-weight:600;color:#b45309;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">遺漏券明細（${data.missing.reduce((a,x)=>a+(x.m.count||1),0)} 筆）</div>
-      <div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
-        ${data.missing.map(({m})=>{const pc=m.proof==='收據'?'proof-receipt':'proof-none';const pi=m.proof==='收據'?'🧾':'❌';return`<div class="miss-list-item"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0"><span style="font-size:13px">${m.name}</span><span class="proof-chip ${pc}">${pi} ${m.proof||'—'}</span><span style="font-size:12px;font-weight:600;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span></div></div>`;}).join('')}
-      </div>
-    </div>`:''}`;
+    ${!selectedDate ? '<p style="font-size:13px;color:#9ca3af;font-style:italic">請選擇日期以查看資料</p>' : (()=>{
+      const data=dateMap.get(selectedDate);
+      if(!data) return '<p style="font-size:13px;color:#9ca3af;font-style:italic">此日期無資料</p>';
+      const storeSnMap=new Map();
+      data.sns.forEach(({key,storeName})=>{if(!storeSnMap.has(storeName))storeSnMap.set(storeName,[]);storeSnMap.get(storeName).push(key);});
+      return `
+        ${data.sns.length?`<div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:600;color:#6b6b67;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">流水號明細（${data.sns.length} 筆）</div>
+          ${[...storeSnMap.entries()].map(([sn,keys])=>`<div style="margin-bottom:10px"><div style="font-size:12px;color:#6b6b67;margin-bottom:4px">${sn}</div><div class="sn-grid">${keys.sort().map(k=>`<span class="sn-chip">${k}</span>`).join('')}</div></div>`).join('')}
+        </div>`:''}
+        ${data.missing.length?`<div>
+          <div style="font-size:11px;font-weight:600;color:#b45309;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">遺漏券明細（${data.missing.reduce((a,x)=>a+(x.m.count||1),0)} 筆）</div>
+          <div style="border:1px solid #e5e3db;border-radius:8px;overflow:hidden">
+            ${data.missing.map(({m})=>{const pc=m.proof==='收據'?'proof-receipt':'proof-none';const pi=m.proof==='收據'?'🧾':'❌';return`<div class="miss-list-item"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0"><span style="font-size:13px">${m.name}</span><span class="proof-chip ${pc}">${pi} ${m.proof||'—'}</span><span style="font-size:12px;font-weight:600;background:#f0ede8;border:1px solid #d1d0c8;border-radius:4px;padding:1px 8px">${m.count||1} 筆</span></div></div>`;}).join('')}
+          </div>
+        </div>`:''}`;
+    })()}`;
 }
 
 function populateStoreSelects(){
